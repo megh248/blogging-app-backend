@@ -1,37 +1,32 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
-const UserSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        trim: true,
-        minlength: 3,
-        maxlength: 30
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        lowercase: true,
-        match: /.+\@.+\..+/
-    },
-    password: {
-        type: String,
-        required: true,
-        minlength: 6,
-        select: false // Exclude password from queries by default
-    },
-    timestamps: true // Automatically manage createdAt and updatedAt fields
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6
+  }
+}, { timestamps: true });
+
+// Pre-save hook to hash password
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
-UserSchema.pre("save", async function (next) {
-    if (this.isModified('password')) {
-        const bcrypt = require('bcryptjs');
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-    }
-    next();
-});
-
-module.exports = mongoose.model('User', UserSchema);
+const User = mongoose.model("User", userSchema);
+export default User;
