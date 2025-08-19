@@ -49,7 +49,10 @@ router.post("/login", async(req,res) => {
       userId: user._id,
     },process.env.JWT_SECRET);
     // return token and message
-    res.status(200).json({ message: "Login successful", token: token });
+    res.status(200).json({ message: "Login successful", token: token, user:{
+      id: user._id,
+      name: user.name
+    } });
     
   }catch(e){
     console.log(e);
