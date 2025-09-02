@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 
 // Import Routes
 import userRoutes from "./routes/user.js";
+import blogRoutes from "./routes/blog.js";
 
 dotenv.config();
 const app = express();
@@ -21,12 +22,12 @@ app.use(
 
 // ✅ Debug log requests
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
   next();
 });
 
 // ✅ Routes
 app.use("/api/user", userRoutes);
+app.use("/api", blogRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
